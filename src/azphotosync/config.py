@@ -14,6 +14,7 @@ class SyncConfig:
     prefix: str = "photos"
     dry_run: bool = False
     max_workers: int = 4
+    access_tier: str = "cool"
 
     @property
     def db_path(self) -> Path:
@@ -32,6 +33,7 @@ def load_config(
     prefix: str,
     dry_run: bool,
     max_workers: int,
+    access_tier: str,
 ) -> SyncConfig:
     source = Path(source_dir).expanduser().resolve()
     state = Path(state_dir).expanduser().resolve()
@@ -54,6 +56,9 @@ def load_config(
         )
     if max_workers < 1 or max_workers > 32:
         raise ConfigError("--max-workers must be between 1 and 32")
+    resolved_access_tier = access_tier.lower()
+    if resolved_access_tier not in {"hot", "cool", "cold", "archive"}:
+        raise ConfigError("--access-tier must be one of: hot, cool, cold, archive")
 
     return SyncConfig(
         source_dir=source,
@@ -63,4 +68,5 @@ def load_config(
         prefix=prefix.strip("/"),
         dry_run=dry_run,
         max_workers=max_workers,
+        access_tier=resolved_access_tier,
     )

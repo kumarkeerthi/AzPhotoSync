@@ -8,7 +8,8 @@ from azure.storage.blob import BlobServiceClient, ContentSettings
 
 
 class AzureBlobStore:
-    def __init__(self, account_url: str, container_name: str):
+    def __init__(self, account_url: str, container_name: str, access_tier: str = "cool"):
+        self._access_tier = access_tier
         self._credential = DefaultAzureCredential(exclude_interactive_browser_credential=True)
         self._service = BlobServiceClient(account_url=account_url, credential=self._credential)
         self._container = self._service.get_container_client(container_name)
@@ -25,6 +26,7 @@ class AzureBlobStore:
                 fd,
                 overwrite=False,
                 max_concurrency=4,
+                standard_blob_tier=self._access_tier.capitalize(),
                 content_settings=ContentSettings(content_type=content_type),
             )
         return resp["etag"]

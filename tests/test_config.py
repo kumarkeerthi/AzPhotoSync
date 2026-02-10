@@ -19,6 +19,7 @@ def test_load_config_reads_env(monkeypatch, tmp_path):
         prefix="photos",
         dry_run=True,
         max_workers=4,
+        access_tier="cool",
     )
 
     assert config.account_url == "https://acct.blob.core.windows.net"
@@ -36,4 +37,21 @@ def test_load_config_requires_source(tmp_path):
             prefix="photos",
             dry_run=False,
             max_workers=4,
+            access_tier="cool",
+        )
+
+def test_load_config_validates_access_tier(tmp_path):
+    source = tmp_path / "photos"
+    source.mkdir()
+
+    with pytest.raises(ConfigError):
+        load_config(
+            source_dir=str(source),
+            state_dir=str(tmp_path / "state"),
+            account_url="https://acct.blob.core.windows.net",
+            container="media",
+            prefix="photos",
+            dry_run=False,
+            max_workers=4,
+            access_tier="cheap",
         )
