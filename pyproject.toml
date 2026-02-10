@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "az-photo-sync"
+version = "0.1.0"
+description = "Production-minded secure photo sync to Azure Blob Storage"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "AzPhotoSync" }]
+dependencies = [
+  "azure-storage-blob>=12.20.0",
+  "azure-identity>=1.17.1",
+  "click>=8.1.7",
+  "python-dateutil>=2.9.0.post0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3.2",
+  "pytest-cov>=5.0.0",
+]
+
+[project.scripts]
+azphotosync = "azphotosync.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+addopts = "-q"
