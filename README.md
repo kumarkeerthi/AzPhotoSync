@@ -52,6 +52,20 @@ Practical setup:
 
 This keeps phone-side automation simple and preserves end-to-end incremental syncing in Azure.
 
+
+## Native iPhone app (new)
+
+This repository now includes a SwiftUI iPhone client at `ios/AzPhotoSyncMobile` that provides a Google Photos-style experience (photo grid, multi-select, secure upload queue).
+
+Security design:
+
+- iOS never stores Azure account keys.
+- iOS requests short-lived upload URLs from your backend.
+- Backend should mint write-only SAS tokens using Managed Identity via `MobileTokenIssuer` (`src/azphotosync/mobile_auth.py`).
+- Upload URLs are HTTPS-only and short-lived (default 10 minutes).
+
+See `ios/AzPhotoSyncMobile/README.md` for integration details and backend API contract.
+
 ## Choosing the cheapest Azure storage tier
 
 For your request (low cost, but still fast enough to download photos/videos), use:
