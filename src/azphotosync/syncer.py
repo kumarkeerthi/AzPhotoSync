@@ -28,7 +28,11 @@ class SyncRunner:
         from azphotosync.storage import AzureBlobStore
 
         stats = SyncStats()
-        store = AzureBlobStore(self._config.account_url, self._config.container)
+        store = AzureBlobStore(
+            self._config.account_url,
+            self._config.container,
+            access_tier=self._config.access_tier,
+        )
         if not self._config.dry_run:
             store.ensure_container()
 

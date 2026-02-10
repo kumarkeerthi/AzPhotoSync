@@ -40,6 +40,35 @@ export AZURE_STORAGE_ACCOUNT_URL="https://<account>.blob.core.windows.net"
 export AZURE_STORAGE_CONTAINER="photos-archive"
 ```
 
+## iPhone app workflow (recommended)
+
+Use the built-in **Files** app on iPhone with Azure Storage mounted through a third-party client that supports Blob Storage sync (for example, **PhotoSync** app, which can auto-transfer photos/videos to Azure Blob-compatible targets). Point uploads to this project's source folder on your always-on machine, then run `azphotosync` on a schedule.
+
+Practical setup:
+
+1. Install **PhotoSync** on iPhone and enable automatic transfer (Wi-Fi + charging).
+2. Transfer to a folder watched by this tool (for example `/data/iphone-import`).
+3. Run AzPhotoSync against that folder via systemd timer/cron.
+
+This keeps phone-side automation simple and preserves end-to-end incremental syncing in Azure.
+
+## Choosing the cheapest Azure storage tier
+
+For your request (low cost, but still fast enough to download photos/videos), use:
+
+- **Standard GPv2 storage account**
+- **Blob access tier: `cool`** (recommended default)
+
+Why `cool`:
+
+- lower storage cost than `hot`
+- retrieval is still online and generally fast enough for photo/video downloads
+- avoids archive rehydration delays and complexity
+
+Avoid `archive` for normal browsing/downloading because retrieval can take hours.
+
+AzPhotoSync now supports upload tier selection via `--access-tier`.
+
 ## Usage
 
 Dry run first:
@@ -51,7 +80,7 @@ azphotosync --source ~/Pictures --dry-run --verbose
 Real sync:
 
 ```bash
-azphotosync --source ~/Pictures --state-dir ~/.azphotosync --max-workers 8
+azphotosync --source ~/Pictures --state-dir ~/.azphotosync --max-workers 8 --access-tier cool
 ```
 
 ## Production deployment patterns

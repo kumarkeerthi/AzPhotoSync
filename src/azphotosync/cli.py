@@ -16,8 +16,15 @@ from azphotosync.syncer import SyncRunner
 @click.option("--prefix", default="photos", show_default=True, help="Prefix for uploaded blobs")
 @click.option("--dry-run", is_flag=True, help="Scan and plan uploads without writing to Azure")
 @click.option("--max-workers", default=4, show_default=True, help="Concurrent hashing/upload workers")
+@click.option(
+    "--access-tier",
+    default="cool",
+    show_default=True,
+    type=click.Choice(["hot", "cool", "cold", "archive"], case_sensitive=False),
+    help="Azure blob access tier. cool is lowest-cost for infrequent access with acceptable download speed",
+)
 @click.option("--verbose", is_flag=True, help="Enable debug logs")
-def main(source_dir, state_dir, account_url, container, prefix, dry_run, max_workers, verbose):
+def main(source_dir, state_dir, account_url, container, prefix, dry_run, max_workers, access_tier, verbose):
     """Sync local photo/video assets into Azure Blob Storage safely and incrementally."""
     logging.basicConfig(
         level=logging.DEBUG if verbose else logging.INFO,
@@ -33,6 +40,7 @@ def main(source_dir, state_dir, account_url, container, prefix, dry_run, max_wor
             prefix=prefix,
             dry_run=dry_run,
             max_workers=max_workers,
+            access_tier=access_tier,
         )
     except ConfigError as exc:
         raise click.ClickException(str(exc)) from exc
